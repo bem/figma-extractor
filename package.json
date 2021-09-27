@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "A tool for extract icons from figma in jsx and svg.",
   "main": "index.js",
+  "bin": {
+    "figma-icon-extractor": "./bin/cli.js"
+  },
   "scripts": {
     "build": "node_modules/.bin/tsc --build",
     "dev:ts": "ts-node ./dev/ts-node.ts",
@@ -30,7 +33,8 @@
     "node-fetch": "2.6.1",
     "prettier": "2.3.2",
     "query-string": "7.0.1",
-    "svgo": "2.3.1"
+    "svgo": "2.3.1",
+    "yargs": "^17.1.1"
   },
   "devDependencies": {
     "@types/babel-types": "7.0.10",
