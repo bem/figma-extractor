@@ -9,12 +9,12 @@ import { convertSvgToJsx } from './svg-to-jsx'
 import { format } from './formatter'
 
 export interface ExtractConfig {
-  FIGMA_TOKEN: string
-  FIGMA_PROJECT: string
-  FIGMA_DOCUMENT: string
+  token: string
+  project: string
+  document: string
 }
 
-export async function extractSvgFromFigma(path: string, config: ExtractConfig) {
+export async function extractSvgFromFigma(resultDir: string, config: ExtractConfig) {
   console.log('❯ Fetch components from figma')
 
   const components = await fetchSvgComponents(config)
@@ -27,14 +27,14 @@ export async function extractSvgFromFigma(path: string, config: ExtractConfig) {
     const jsx = convertSvgToJsx(source, component.name)
 
     await Promise.all([
-      writeSvgFile(`${component.name}.tsx`, jsx, path),
-      writeSvgFile(`${component.name}.svg`, source, path),
+      writeSvgFile(`${component.name}.tsx`, jsx, resultDir),
+      writeSvgFile(`${component.name}.svg`, source, resultDir),
     ])
 
     console.log('❯ Component fetched and created:', `${component.name}`)
   }
 
-  writeIndexFile(components, path)
+  writeIndexFile(components, resultDir)
 
   console.log('❯ Index created')
 }
@@ -46,39 +46,36 @@ export async function fetchSvgComponents(config: ExtractConfig) {
       children: FigmaChildren[]
     }
   }
-  const { FIGMA_TOKEN, FIGMA_PROJECT, FIGMA_DOCUMENT } = config
+  const { token, project, document } = config
   const headers = new Headers({
-    'X-Figma-Token': FIGMA_TOKEN,
+    'X-Figma-Token': token,
   })
 
-  const response = await fetch(
-    `https://api.figma.com/v1/files/${FIGMA_PROJECT}?ids=${FIGMA_DOCUMENT}`,
-    {
-      method: 'GET',
-      headers,
-    },
-  )
+  const response = await fetch(`https://api.figma.com/v1/files/${project}?ids=${document}`, {
+    method: 'GET',
+    headers,
+  })
 
   if (!response.ok) {
     throw new Error(`Unexpected response: ${response.statusText}.`)
   }
 
   const json: OkResponse = await response.json()
-  const page = json.document.children.find((child) => child.id === FIGMA_DOCUMENT)
+  const page = json.document.children.find((child) => child.id === document)
 
   if (!page) {
-    throw new Error(`Cannot find page: ${FIGMA_DOCUMENT}.`)
+    throw new Error(`Cannot find page: ${document}.`)
   }
   return parseComponents(page)
 }
 
 async function fetchSvgUrl(ids: string[], config: ExtractConfig) {
-  const { FIGMA_TOKEN, FIGMA_PROJECT, FIGMA_DOCUMENT } = config
+  const { token, project } = config
   const headers = new Headers({
-    'X-Figma-Token': FIGMA_TOKEN,
+    'X-Figma-Token': token,
   })
   const query = qs.stringify({ ids, format: 'svg' }, { arrayFormat: 'comma' })
-  const response = await fetch(`https://api.figma.com/v1/images/${FIGMA_PROJECT}?${query}`, {
+  const response = await fetch(`https://api.figma.com/v1/images/${project}?${query}`, {
     method: 'GET',
     headers,
   })
@@ -103,8 +100,8 @@ async function fetchSvgUrl(ids: string[], config: ExtractConfig) {
   return images
 }
 
-async function fetchSvgSource(path: string) {
-  const response = await fetch(path, { method: 'GET' })
+async function fetchSvgSource(resultDir: string) {
+  const response = await fetch(resultDir, { method: 'GET' })
 
   if (!response.ok) {
     throw new Error(`Unexpected response: ${response.statusText}`)
@@ -116,11 +113,11 @@ async function fetchSvgSource(path: string) {
   return content
 }
 
-async function writeSvgFile(name: string, content: string, path: string) {
-  writeFile(resolve(path, name), content)
+async function writeSvgFile(name: string, content: string, resultDir: string) {
+  writeFile(resolve(resultDir, name), content)
 }
 
-async function writeIndexFile(components: Map<string, Component>, path: string) {
+async function writeIndexFile(components: Map<string, Component>, resultDir: string) {
   const exports = []
 
   for (const [_, component] of components) {
@@ -129,5 +126,5 @@ async function writeIndexFile(components: Map<string, Component>, path: string) 
 
   const content = format(exports.join('\n'))
 
-  await writeFile(resolve(path, 'index.ts'), content)
+  await writeFile(resolve(resultDir, 'index.ts'), content)
 }

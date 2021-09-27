@@ -8,12 +8,20 @@ A tool for extract icons from figma in jsx and svg.
 import extract from '@yandex/figma-icon-extractor'
 import { resolve } from 'path'
 
-extract(resolve(__dirname, 'test'), { FIGMA_TOKEN , FIGMA_PROJECT, FIGMA_DOCUMENT })
+const { FIGMA_TOKEN = '', FIGMA_PROJECT = '', FIGMA_DOCUMENT = '' } = process.env
+const resultDir = resolve(__dirname, 'test')
+const params = {
+  token: FIGMA_TOKEN,
+  project: FIGMA_PROJECT,
+  document: FIGMA_DOCUMENT,
+}
+
+extract(resultDir, params)
 ```
 
-* **FIGMA_TOKEN** — Figma development token
-* **FIGMA_PROJECT** — Project id in figma
-* **FIGMA_DOCUMENT** — Document id in figma
+* **token** — Figma development token
+* **project** — Project id in figma
+* **document** — Document id in figma
 
 ```sh
 ts-node ./tools/figma-extractor/index.ts

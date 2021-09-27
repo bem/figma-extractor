@@ -3,16 +3,16 @@ import { resolve } from 'path'
 import fg from 'fast-glob'
 import { extractSvgFromFigma, ExtractConfig } from './extract-svg-from-figma'
 
-async function main(path: string, config: ExtractConfig) {
-  prepareDirectory(path)
-  await extractSvgFromFigma(path, config)
+async function main(resultDir: string, config: ExtractConfig) {
+  prepareDirectory(resultDir)
+  await extractSvgFromFigma(resultDir, config)
 }
 
-function prepareDirectory(path: string) {
-  console.log('❯ Clearing ', path)
+function prepareDirectory(resultDir: string) {
+  console.log('❯ Clearing ', resultDir)
   const cwd = process.cwd()
-  const ignore = [`${path}/__tests__`, `${path}/__examples__`]
-  const files = fg.sync(`${path}/**/*`, { ignore, cwd })
+  const ignore = [`${resultDir}/__tests__`, `${resultDir}/__examples__`]
+  const files = fg.sync(`${resultDir}/**/*`, { ignore, cwd })
 
   for (const file of files) {
     removeSync(resolve(cwd, file))
