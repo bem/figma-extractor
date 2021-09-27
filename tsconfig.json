@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES5" ,
+    "module": "commonjs" ,
+    "jsx": "react-jsx" ,
+    "declaration": true ,
+    "outDir": "./lib" ,
+    "rootDir": "./src" ,
+    "stripInternal": true,
+    "noEmitHelpers": true,
+    "importHelpers": true ,
+    "strict": true ,
+    "moduleResolution": "node" ,
+    "baseUrl": "./" ,
+    "allowSyntheticDefaultImports": true ,
+    "esModuleInterop": true, 
+    "downlevelIteration": true
+  },
+  "include": ["src"]
+}
