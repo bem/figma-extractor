@@ -2,7 +2,7 @@ import { resolve } from 'path'
 import prettier from 'prettier'
 
 export function format(code: string) {
-  const options = prettier.resolveConfig.sync(resolve(process.cwd(), '.prettierrc'))
+  const options = prettier.resolveConfig.sync(resolve(__dirname, '../.prettierrc'))
 
   if (!options) {
     throw new Error('Cannot load prettier config.')
