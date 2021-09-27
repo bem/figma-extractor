@@ -1,3 +1,4 @@
-ESLint
-Tests
-Readme
+* ESLint
+* Tests
+* Readme
+* Describe contracts
