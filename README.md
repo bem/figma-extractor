@@ -18,15 +18,13 @@ const params = {
 
 extract(resultDir, params)
 ```
-
+or via npx
+```sh
+npx @yandex/figma-icon-extractor resultDir token project document
+```
 * **token** — Figma development token
 * **project** — Project id in figma
 * **document** — Document id in figma
-
-```sh
-ts-node ./tools/figma-extractor/index.ts
-```
-
 ## How it work
 
 1. Fetch components id from figma document
