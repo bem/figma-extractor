@@ -10,8 +10,8 @@ import { format } from './formatter'
 
 export interface ExtractConfig {
   token: string
-  project: string
-  document: string
+  file: string
+  page: string
 }
 
 export async function extractSvgFromFigma(resultDir: string, config: ExtractConfig) {
@@ -46,12 +46,12 @@ export async function fetchSvgComponents(config: ExtractConfig) {
       children: FigmaChildren[]
     }
   }
-  const { token, project, document } = config
+  const { token, file, page: pageId } = config
   const headers = new Headers({
     'X-Figma-Token': token,
   })
 
-  const response = await fetch(`https://api.figma.com/v1/files/${project}?ids=${document}`, {
+  const response = await fetch(encodeURI(`https://api.figma.com/v1/files/${file}?ids=${pageId}`), {
     method: 'GET',
     headers,
   })
@@ -61,7 +61,7 @@ export async function fetchSvgComponents(config: ExtractConfig) {
   }
 
   const json: OkResponse = await response.json()
-  const page = json.document.children.find((child) => child.id === document)
+  const page = json.document.children.find((child) => child.id === pageId)
 
   if (!page) {
     throw new Error(`Cannot find page: ${document}.`)
@@ -70,12 +70,12 @@ export async function fetchSvgComponents(config: ExtractConfig) {
 }
 
 async function fetchSvgUrl(ids: string[], config: ExtractConfig) {
-  const { token, project } = config
+  const { token, file } = config
   const headers = new Headers({
     'X-Figma-Token': token,
   })
   const query = qs.stringify({ ids, format: 'svg' }, { arrayFormat: 'comma' })
-  const response = await fetch(`https://api.figma.com/v1/images/${project}?${query}`, {
+  const response = await fetch(`https://api.figma.com/v1/images/${file}?${query}`, {
     method: 'GET',
     headers,
   })
