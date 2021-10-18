@@ -26,6 +26,8 @@ npx @yandex/figma-icon-extractor <resultDir> <token> <file> <page>
 * **file** — File id in figma
 * **page** — Page id in figma
 
+Hint: You can retrieve file and page ids from url `https://www.figma.com/file/<file id>/<file name>?node-id=<page id>`
+
 ## How it work
 
 1. Fetch components id from figma document
