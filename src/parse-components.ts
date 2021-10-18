@@ -9,7 +9,7 @@ export interface Component {
 export interface FigmaChildren {
   id: string
   name: string
-  type: 'COMPONENT_SET' | 'COMPONENT'
+  type: 'COMPONENT_SET' | 'COMPONENT' | 'INSTANCE'
   children: FigmaChildren[]
 }
 
@@ -30,7 +30,7 @@ export const parseComponents = (page: FigmaChildren) => {
         }
       }
     }
-    if (firstLevelChild.type === 'COMPONENT') {
+    if (firstLevelChild.type === 'COMPONENT' || firstLevelChild.type === 'INSTANCE') {
       parseComponent(firstLevelChild, undefined, { visited, components })
     }
   }
@@ -53,7 +53,7 @@ function parseComponent(
     return
   }
 
-  const name = createName(parentName || component.name, componentMeta.isOutline)
+  const name = createName(parentName || component.name.split(',')[0], componentMeta.isOutline)
   const previous = visited.get(name)
 
   if (previous) {
