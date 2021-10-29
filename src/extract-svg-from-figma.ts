@@ -12,6 +12,7 @@ export interface ExtractConfig {
   token: string
   file: string
   page: string
+  filter?: 'svg' | 'tsx' | 'svg+tsx'
 }
 
 export async function extractSvgFromFigma(resultDir: string, config: ExtractConfig) {
@@ -26,10 +27,17 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
     const source = await fetchSvgSource(url)
     const jsx = convertSvgToJsx(source, component.name)
 
-    await Promise.all([
-      writeSvgFile(`${component.name}.tsx`, jsx, resultDir),
-      writeSvgFile(`${component.name}.svg`, source, resultDir),
-    ])
+    let filteredTasks = []
+    let filter = config.filter || 'svg+tsx'
+
+    if (filter.includes('svg')) {
+      filteredTasks.push(writeSvgFile(`${component.name}.tsx`, jsx, resultDir))
+    }
+    if (filter.includes('tsx')) {
+      filteredTasks.push(writeSvgFile(`${component.name}.svg`, source, resultDir))
+    }
+
+    await Promise.all(filteredTasks)
 
     console.log('❯ Component fetched and created:', `${component.name}`)
   }
