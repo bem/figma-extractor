@@ -27,11 +27,11 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
     const component = components.get(id)!
 
     const source = await fetchSvgSource(url)
-    const jsx = convertSvgToJsx(source, component.name)
 
     let filteredTasks = []
 
     if (filter.includes('tsx')) {
+      const jsx = convertSvgToJsx(source, component)
       filteredTasks.push(writeSvgFile(`${component.name}.tsx`, jsx, resultDir))
     }
     if (filter.includes('svg')) {

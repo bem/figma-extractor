@@ -5,14 +5,19 @@ import traverse from '@babel/traverse'
 import * as t from '@babel/types'
 
 import { format } from './formatter'
+import { Component } from './parse-components'
 
-export function convertSvgToJsx(svg: string, name: string) {
+export function convertSvgToJsx(svg: string, component: Component) {
   const ast = parse(svg, { plugins: ['jsx'] })
 
   prepareSvgJsxAst(ast)
 
   const result = transformFromAstSync(ast, svg)
-  const content = template({ name, svg: normalizeResultCode(result?.code ?? '') })
+  const content = template({
+    name: component.name,
+    svg: normalizeResultCode(result?.code ?? ''),
+    sizes: component.meta.sizes,
+  })
 
   return content
 }
@@ -79,7 +84,7 @@ function normalizeResultCode(code: string) {
   return code.replace(/;$/, '')
 }
 
-function template(props: { svg: string; name: string }) {
+function template(props: { svg: string; name: string; sizes: number[] }) {
   const { svg, name } = props
 
   const template = `
@@ -95,13 +100,13 @@ function template(props: { svg: string; name: string }) {
       /**
        * Icon size
        *
-       * @default 24
+       * @default ${props.sizes[0]}
        */
-      size?: 12 | 16 | 24 | 32
+      size?: ${props.sizes.join(' | ')}
     }
 
     export const ${name} = forwardRef<SVGSVGElement, ${name}Props>((props, ref) => {
-      const { className, size = 24, ...otherProps } = props
+      const { className, size = ${props.sizes[0]}, ...otherProps } = props
 
       return (
         ${svg}
