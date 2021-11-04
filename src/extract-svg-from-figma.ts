@@ -21,6 +21,8 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
   const components = await fetchSvgComponents(config)
   const urls = await fetchSvgUrl(Array.from(components.keys()), config)
 
+  let filter = config.filter || 'svg+tsx'
+
   for (const [id, url] of urls) {
     const component = components.get(id)!
 
@@ -28,12 +30,11 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
     const jsx = convertSvgToJsx(source, component.name)
 
     let filteredTasks = []
-    let filter = config.filter || 'svg+tsx'
 
-    if (filter.includes('svg')) {
+    if (filter.includes('tsx')) {
       filteredTasks.push(writeSvgFile(`${component.name}.tsx`, jsx, resultDir))
     }
-    if (filter.includes('tsx')) {
+    if (filter.includes('svg')) {
       filteredTasks.push(writeSvgFile(`${component.name}.svg`, source, resultDir))
     }
 
@@ -42,7 +43,9 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
     console.log('❯ Component fetched and created:', `${component.name}`)
   }
 
-  writeIndexFile(components, resultDir)
+  if (filter.includes('tsx')) {
+    writeIndexFile(components, resultDir)
+  }
 
   console.log('❯ Index created')
 }
