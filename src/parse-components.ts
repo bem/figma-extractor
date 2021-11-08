@@ -53,7 +53,7 @@ function parseComponent(
     return
   }
 
-  const name = createName(parentName || component.name.split(',')[0], componentMeta.isOutline)
+  const name = createName(parentName || component.name.split(',')[0], componentMeta.modifiers)
   const previous = visited.get(name)
 
   if (previous) {

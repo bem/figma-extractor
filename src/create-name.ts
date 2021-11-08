@@ -1,13 +1,9 @@
 import { pascalCase } from 'change-case'
 
-export function createName(baseName: string, isOutline: boolean) {
+export function createName(baseName: string, modifiers: string[]) {
   assertName(baseName, (name) => `❗️ Found unexpected symbols in name: ${name}`)
 
-  if (isOutline) {
-    return pascalCase(`${baseName}Outline`)
-  }
-
-  return pascalCase(baseName)
+  return pascalCase(`${baseName}${modifiers.map((s) => pascalCase(s)).join('')}`)
 }
 
 function assertName(name: string, fn: (name: string) => string) {

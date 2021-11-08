@@ -1,6 +1,6 @@
 export interface Meta {
-  isOutline: boolean
   isExported: boolean
+  modifiers: string[]
   sizes: number[]
 }
 
@@ -12,24 +12,22 @@ export interface Meta {
  * }
  */
 export function parseMeta(meta: string): Meta {
-  const result: Meta = { isOutline: false, isExported: true, sizes: [0] }
+  const result: Meta = { isExported: true, sizes: [0], modifiers: [] }
   const chunks = meta.replace(/\s/g, '').split(',')
 
   for (const chunk of chunks) {
     const [token, value] = chunk.split('=')
 
     switch (token) {
-      case 'Outline':
-        result.isOutline = value === 'True'
-        break
-      case 'Filled':
-        result.isOutline = value !== 'True'
-        break
       case 'Export':
         result.isExported = value === 'False' ? false : true
         break
       default:
-        result.sizes = value === 'True' ? [Number(token)] : result.sizes
+        if (token.match(/^\d+$/)) {
+          result.sizes = value === 'True' ? [Number(token)] : result.sizes
+        } else if (value === 'True') {
+          result.modifiers.push(token)
+        }
         break
     }
   }
