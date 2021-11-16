@@ -26,6 +26,7 @@ npx @yandex/figma-icon-extractor <resultDir> <token> <file> <page> [filter]
 * **file** — File id in figma
 * **page** — Page id in figma
 * **filter** - Optional. Which files should be generated either `svg` or `tsx` or `svg+tsx`
+* **--preserve-color** - Optional. Disables replacing colors with `currentColor` 
 
 Hint: You can retrieve file and page ids from url `https://www.figma.com/file/<file id>/<file name>?node-id=<page id>`
 

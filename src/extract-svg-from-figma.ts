@@ -13,6 +13,7 @@ export interface ExtractConfig {
   file: string
   page: string
   filter?: 'svg' | 'tsx' | 'svg+tsx'
+  preserveColors?: boolean
 }
 
 export async function extractSvgFromFigma(resultDir: string, config: ExtractConfig) {
@@ -26,7 +27,7 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
   for (const [id, url] of urls) {
     const component = components.get(id)!
 
-    const source = await fetchSvgSource(url)
+    const source = await fetchSvgSource(url, config)
 
     let filteredTasks = []
 
@@ -111,7 +112,7 @@ async function fetchSvgUrl(ids: string[], config: ExtractConfig) {
   return images
 }
 
-async function fetchSvgSource(resultDir: string) {
+async function fetchSvgSource(resultDir: string, config: ExtractConfig) {
   const response = await fetch(resultDir, { method: 'GET' })
 
   if (!response.ok) {
@@ -119,7 +120,7 @@ async function fetchSvgSource(resultDir: string) {
   }
 
   let content = await response.text()
-  content = optimizeSvg(content)
+  content = optimizeSvg(content, config)
 
   return content
 }
