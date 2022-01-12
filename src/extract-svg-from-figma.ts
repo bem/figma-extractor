@@ -5,7 +5,7 @@ import qs from 'query-string'
 
 import { FigmaChildren, parseComponents, Component } from './parse-components'
 import { optimizeSvg } from './optimize-svg'
-import { convertSvgToJsx } from './svg-to-jsx'
+import { convertSvgToJsx, TemplateFn } from './svg-to-jsx'
 import { format } from './formatter'
 
 export interface ExtractConfig {
@@ -14,6 +14,7 @@ export interface ExtractConfig {
   page: string
   filter?: 'svg' | 'tsx' | 'svg+tsx'
   preserveColors?: boolean
+  templateFn?: TemplateFn
 }
 
 export async function extractSvgFromFigma(resultDir: string, config: ExtractConfig) {
@@ -32,7 +33,7 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
     let filteredTasks = []
 
     if (filter.includes('tsx')) {
-      const jsx = convertSvgToJsx(source, component)
+      const jsx = convertSvgToJsx(source, component, config.templateFn)
       filteredTasks.push(writeSvgFile(`${component.name}.tsx`, jsx, resultDir))
     }
     if (filter.includes('svg')) {

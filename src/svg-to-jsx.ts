@@ -7,8 +7,11 @@ import * as t from '@babel/types'
 import { format } from './formatter'
 import { Component } from './parse-components'
 
-export function convertSvgToJsx(svg: string, component: Component) {
+export type TemplateFn = (props: { svg: string; name: string; sizes: number[] }) => string
+
+export function convertSvgToJsx(svg: string, component: Component, templateFn?: TemplateFn) {
   const ast = parse(svg, { plugins: ['jsx'] })
+  const template = templateFn || defaultTemplate
 
   prepareSvgJsxAst(ast)
 
@@ -19,7 +22,7 @@ export function convertSvgToJsx(svg: string, component: Component) {
     sizes: component.meta.sizes,
   })
 
-  return content
+  return format(content)
 }
 
 function prepareSvgJsxAst(ast: any) {
@@ -84,7 +87,7 @@ function normalizeResultCode(code: string) {
   return code.replace(/;$/, '')
 }
 
-function template(props: { svg: string; name: string; sizes: number[] }) {
+function defaultTemplate(props: { svg: string; name: string; sizes: number[] }) {
   const { svg, name } = props
 
   const template = `
@@ -114,5 +117,5 @@ function template(props: { svg: string; name: string; sizes: number[] }) {
     })
   `
 
-  return format(template)
+  return template
 }
