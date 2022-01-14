@@ -5,8 +5,10 @@ import qs from 'query-string'
 
 import { FigmaChildren, parseComponents, Component } from './parse-components'
 import { optimizeSvg } from './optimize-svg'
-import { convertSvgToJsx, TemplateFn } from './svg-to-jsx'
+import { convertSvgToJsx, ComponentTemplateFn } from './svg-to-jsx'
 import { format } from './formatter'
+
+export type ExportTemplateFn = (name: string) => string
 
 export interface ExtractConfig {
   token: string
@@ -14,7 +16,8 @@ export interface ExtractConfig {
   page: string
   filter?: 'svg' | 'tsx' | 'svg+tsx'
   preserveColors?: boolean
-  templateFn?: TemplateFn
+  componentTemplateFn?: ComponentTemplateFn
+  exportTemplateFn?: ExportTemplateFn
 }
 
 export async function extractSvgFromFigma(resultDir: string, config: ExtractConfig) {
@@ -33,7 +36,7 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
     let filteredTasks = []
 
     if (filter.includes('tsx')) {
-      const jsx = convertSvgToJsx(source, component, config.templateFn)
+      const jsx = convertSvgToJsx(source, component, config.componentTemplateFn)
       filteredTasks.push(writeSvgFile(`${component.name}.tsx`, jsx, resultDir))
     }
     if (filter.includes('svg')) {
@@ -46,7 +49,7 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
   }
 
   if (filter.includes('tsx')) {
-    writeIndexFile(components, resultDir)
+    writeIndexFile(components, resultDir, config.exportTemplateFn)
   }
 
   console.log('❯ Index created')
@@ -130,14 +133,23 @@ async function writeSvgFile(name: string, content: string, resultDir: string) {
   writeFile(resolve(resultDir, name), content)
 }
 
-async function writeIndexFile(components: Map<string, Component>, resultDir: string) {
+async function writeIndexFile(
+  components: Map<string, Component>,
+  resultDir: string,
+  templateFn?: ExportTemplateFn,
+) {
+  const template = templateFn || defaultExportTemplateFn
   const exports = []
 
   for (const [_, component] of components) {
-    exports.push(`export * from './${component.name}'`)
+    exports.push(template(component.name))
   }
 
   const content = format(exports.join('\n'))
 
   await writeFile(resolve(resultDir, 'index.ts'), content)
+}
+
+function defaultExportTemplateFn(name: string) {
+  return `export * from './${name}'`
 }
