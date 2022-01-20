@@ -21,7 +21,7 @@ export function convertSvgToJsx(
 
   const result = transformFromAstSync(ast, svg)
   const content = template({
-    name: component.name,
+    name: component.selfName,
     svg: normalizeResultCode(result?.code ?? ''),
     sizes: component.meta.sizes,
   })

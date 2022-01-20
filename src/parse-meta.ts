@@ -22,15 +22,21 @@ export function parseMeta(meta: string): Meta {
       case 'Export':
         result.isExported = value === 'False' ? false : true
         break
+      case 'Size':
+        result.sizes = [Number.parseInt(value)]
+        break
       default:
         if (token.match(/^\d+$/)) {
-          result.sizes = value === 'True' ? [Number(token)] : result.sizes
-        } else if (value === 'True') {
+          result.sizes = value && value.toLowerCase() === 'true' ? [Number(token)] : result.sizes
+        } else if (value && value.toLowerCase() === 'true') {
           result.modifiers.push(token)
         }
         break
     }
   }
+
+  // For a consistency
+  result.modifiers = result.modifiers.sort()
 
   return result
 }

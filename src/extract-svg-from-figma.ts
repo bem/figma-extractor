@@ -1,4 +1,5 @@
 import { writeFile } from 'fs-extra'
+import fs from 'fs'
 import { resolve } from 'path'
 import fetch, { Headers } from 'node-fetch'
 import qs from 'query-string'
@@ -34,6 +35,10 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
     const source = await fetchSvgSource(url, config)
 
     let filteredTasks = []
+
+    if (component.folder && !fs.existsSync(resolve(resultDir, component.folder))) {
+      fs.mkdirSync(resolve(resultDir, component.folder), { recursive: true })
+    }
 
     if (filter.includes('tsx')) {
       const jsx = convertSvgToJsx(source, component, config.componentTemplateFn)

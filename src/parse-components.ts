@@ -3,7 +3,9 @@ import { Meta, parseMeta } from './parse-meta'
 
 export interface Component {
   name: string
+  selfName: string
   meta: Meta
+  folder?: string
 }
 
 export interface FigmaChildren {
@@ -31,7 +33,8 @@ export const parseComponents = (page: FigmaChildren) => {
       }
     }
     if (firstLevelChild.type === 'COMPONENT' || firstLevelChild.type === 'INSTANCE') {
-      parseComponent(firstLevelChild, undefined, { visited, components })
+      const parentName = page.type === 'COMPONENT_SET' ? page.name : undefined
+      parseComponent(firstLevelChild, parentName, { visited, components })
     }
   }
 
@@ -40,7 +43,7 @@ export const parseComponents = (page: FigmaChildren) => {
 
 function parseComponent(
   component: FigmaChildren,
-  parentName: string | undefined,
+  parentNameRaw: string | undefined,
   closure: {
     visited: Map<string, { count: number; sizes: number[]; id: string }>
     components: Map<string, Component>
@@ -49,11 +52,23 @@ function parseComponent(
   const { visited, components } = closure
   const componentMeta = parseMeta(component.name)
 
+  let parentName: string | undefined = undefined
+  let parentFolder = ''
+
+  if (parentNameRaw !== undefined) {
+    const parentPath = parentNameRaw.replace(/\s/g, '')
+    let [parentNamePath, ...reversedPath] = parentPath?.split('/').reverse()
+
+    parentName = parentNamePath
+    parentFolder = reversedPath.reverse().join('/') + '/'
+  }
+
   if (!componentMeta.isExported) {
     return
   }
 
-  const name = createName(parentName || component.name.split(',')[0], componentMeta.modifiers)
+  const selfName = createName(parentName || component.name.split(',')[0], componentMeta.modifiers)
+  const name = parentFolder + selfName
   const previous = visited.get(name)
 
   if (previous) {
@@ -68,9 +83,11 @@ function parseComponent(
       components.set(component.id, {
         meta: { ...componentMeta, sizes: sizes },
         name,
+        selfName,
+        folder: parentFolder,
       })
       visited.set(name, {
-        id: previous.id,
+        id: component.id,
         count: ++previous.count,
         sizes,
       })
@@ -79,6 +96,8 @@ function parseComponent(
       components.set(previous.id, {
         meta: { ...components.get(previous.id)!.meta, sizes: sizes },
         name,
+        selfName,
+        folder: parentFolder,
       })
 
       visited.set(name, {
@@ -95,7 +114,7 @@ function parseComponent(
       })
     }
   } else {
-    components.set(component.id, { meta: componentMeta, name })
+    components.set(component.id, { meta: componentMeta, name, selfName, folder: parentFolder })
     visited.set(name, { count: 0, sizes: componentMeta.sizes, id: component.id })
   }
 }

@@ -13,7 +13,11 @@ function prepareDirectory(resultDir: string) {
     console.log('❯ Clearing ', resultDir)
     const cwd = process.cwd()
     const ignore = [`${resultDir}/__tests__`, `${resultDir}/__examples__`]
-    const files = fg.sync(`${resultDir}/**/*`, { ignore, cwd })
+    const files = fg.sync([`${resultDir}/**/*`, `${resultDir}/**`], {
+      onlyFiles: false,
+      ignore,
+      cwd,
+    })
 
     for (const file of files) {
       removeSync(resolve(cwd, file))
