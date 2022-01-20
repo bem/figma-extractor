@@ -77,10 +77,21 @@ export async function fetchSvgComponents(config: ExtractConfig) {
   }
 
   const json: OkResponse = await response.json()
-  const page = json.document.children.find((child) => child.id === pageId)
+
+  let page = undefined
+  let children = json.document.children
+
+  while (children.length > 0) {
+    page = children.find((child) => child.id === pageId)
+    children = children.flatMap((child) => child.children)
+
+    if (page) {
+      break
+    }
+  }
 
   if (!page) {
-    throw new Error(`Cannot find page: ${document}.`)
+    throw new Error(`Cannot find page: ${pageId}.`)
   }
   return parseComponents(page)
 }
