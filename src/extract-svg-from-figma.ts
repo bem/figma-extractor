@@ -17,6 +17,7 @@ export interface ExtractConfig {
   page: string
   filter?: 'svg' | 'tsx' | 'svg+tsx'
   preserveColors?: boolean
+  nonSquare?: boolean
   componentTemplateFn?: ComponentTemplateFn
   exportTemplateFn?: ExportTemplateFn
 }
@@ -41,7 +42,7 @@ export async function extractSvgFromFigma(resultDir: string, config: ExtractConf
     }
 
     if (filter.includes('tsx')) {
-      const jsx = convertSvgToJsx(source, component, config.componentTemplateFn)
+      const jsx = convertSvgToJsx(source, component, config)
       filteredTasks.push(writeSvgFile(`${component.name}.tsx`, jsx, resultDir))
     }
     if (filter.includes('svg')) {

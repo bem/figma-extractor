@@ -6,18 +6,17 @@ import * as t from '@babel/types'
 
 import { format } from './formatter'
 import { Component } from './parse-components'
+import { ExtractConfig } from './extract-svg-from-figma'
 
 export type ComponentTemplateFn = (props: { svg: string; name: string; sizes: number[] }) => string
 
-export function convertSvgToJsx(
-  svg: string,
-  component: Component,
-  templateFn?: ComponentTemplateFn,
-) {
+export function convertSvgToJsx(svg: string, component: Component, config: ExtractConfig) {
   const ast = parse(svg, { plugins: ['jsx'] })
-  const template = templateFn || defaultComponentTemplate
+  const template =
+    config.componentTemplateFn ||
+    (config.nonSquare ? defaultNonSquareComponentTemplate : defaultSquareComponentTemplate)
 
-  prepareSvgJsxAst(ast)
+  prepareSvgJsxAst(ast, config)
 
   const result = transformFromAstSync(ast, svg)
   const content = template({
@@ -29,7 +28,7 @@ export function convertSvgToJsx(
   return format(content)
 }
 
-function prepareSvgJsxAst(ast: any) {
+function prepareSvgJsxAst(ast: any, config: ExtractConfig) {
   traverse(ast, {
     JSXOpeningElement: (path) => {
       if (!t.isJSXIdentifier(path.node.name)) {
@@ -41,15 +40,17 @@ function prepareSvgJsxAst(ast: any) {
           return t.isJSXAttribute(attr) && attr.name.name !== 'xmlns'
         })
 
-        path.node.attributes = path.node.attributes.map((attr) => {
-          if (t.isJSXAttribute(attr)) {
-            if (attr.name.name === 'width' || attr.name.name === 'height') {
-              attr.value = t.jsxExpressionContainer(t.identifier('size'))
+        if (!config.nonSquare) {
+          path.node.attributes = path.node.attributes.map((attr) => {
+            if (t.isJSXAttribute(attr)) {
+              if (attr.name.name === 'width' || attr.name.name === 'height') {
+                attr.value = t.jsxExpressionContainer(t.identifier('size'))
+              }
             }
-          }
 
-          return attr
-        })
+            return attr
+          })
+        }
 
         path.node.attributes.push(
           t.jsxSpreadAttribute(t.identifier('otherProps')),
@@ -91,7 +92,7 @@ function normalizeResultCode(code: string) {
   return code.replace(/;$/, '')
 }
 
-function defaultComponentTemplate(props: { svg: string; name: string; sizes: number[] }) {
+function defaultSquareComponentTemplate(props: { svg: string; name: string; sizes: number[] }) {
   const { svg, name } = props
 
   const template = `
@@ -114,6 +115,33 @@ function defaultComponentTemplate(props: { svg: string; name: string; sizes: num
 
     export const ${name} = forwardRef<SVGSVGElement, ${name}Props>((props, ref) => {
       const { className, size = ${props.sizes[0]}, ...otherProps } = props
+
+      return (
+        ${svg}
+      )
+    })
+  `
+
+  return template
+}
+
+function defaultNonSquareComponentTemplate(props: { svg: string; name: string; sizes: number[] }) {
+  const { svg, name } = props
+
+  const template = `
+    /* This file was created automatically, don't change it manually. */
+
+    import React, { SVGAttributes, forwardRef } from 'react'
+
+    export interface ${name}Props extends SVGAttributes<SVGSVGElement> {
+      /**
+       * Additional className for svg root
+       */
+      className?: string
+    }
+
+    export const ${name} = forwardRef<SVGSVGElement, ${name}Props>((props, ref) => {
+      const { className, ...otherProps } = props
 
       return (
         ${svg}

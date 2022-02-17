@@ -10,6 +10,10 @@ const argv = require('yargs/yargs')(process.argv.slice(2)).command(
       boolean: true,
       description: 'Disables replacing colors with `currentColor`',
     },
+    'non-square': {
+      boolean: true,
+      description: 'Didables replacing `width` and `height` with `size` parameter',
+    },
   },
   (argv) => {
     const resultDir = resolve(process.cwd(), argv.path)
@@ -19,6 +23,7 @@ const argv = require('yargs/yargs')(process.argv.slice(2)).command(
       page: argv.page,
       filter: argv.filter,
       preserveColors: argv['preserve-colors'],
+      nonSquare: argv['non-square'],
     }
     extract(resultDir, params)
   },
