@@ -52,6 +52,10 @@ function parseComponent(
   const { visited, components } = closure
   const componentMeta = parseMeta(component.name)
 
+  if (!componentMeta.isExported) {
+    return
+  }
+
   let parentName: string | undefined = undefined
   let parentFolder = ''
 
@@ -60,11 +64,7 @@ function parseComponent(
     let [parentNamePath, ...reversedPath] = parentPath?.split('/').reverse()
 
     parentName = parentNamePath
-    parentFolder = reversedPath.reverse().join('/') + '/'
-  }
-
-  if (!componentMeta.isExported) {
-    return
+    parentFolder = (reversedPath.length > 0 ? reversedPath.reverse().join('/') : parentName) + '/'
   }
 
   const selfName = createName(parentName || component.name.split(',')[0], componentMeta.modifiers)
