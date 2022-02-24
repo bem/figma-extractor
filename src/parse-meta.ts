@@ -28,7 +28,7 @@ export function parseMeta(meta: string): Meta {
       default:
         if (token.match(/^\d+$/)) {
           result.sizes = value && value.toLowerCase() === 'true' ? [Number(token)] : result.sizes
-        } else if (value && value.toLowerCase() === 'true') {
+        } else if (value && (value.toLowerCase() === 'true' || value.toLowerCase() === 'on')) {
           result.modifiers.push(token)
         }
         break
