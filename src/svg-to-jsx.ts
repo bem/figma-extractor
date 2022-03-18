@@ -8,7 +8,7 @@ import { format } from './formatter'
 import { Component } from './parse-components'
 import { ExtractConfig } from './extract-svg-from-figma'
 
-export type ComponentTemplateFn = (props: { svg: string; name: string; sizes: number[] }) => string
+export type ComponentTemplateFn = (props: { svg: string; component: Component }) => string
 
 export function convertSvgToJsx(svg: string, component: Component, config: ExtractConfig) {
   const ast = parse(svg, { plugins: ['jsx'] })
@@ -20,9 +20,8 @@ export function convertSvgToJsx(svg: string, component: Component, config: Extra
 
   const result = transformFromAstSync(ast, svg)
   const content = template({
-    name: component.selfName,
+    component,
     svg: normalizeResultCode(result?.code ?? ''),
-    sizes: component.meta.sizes,
   })
 
   return format(content)
@@ -92,8 +91,9 @@ function normalizeResultCode(code: string) {
   return code.replace(/;$/, '')
 }
 
-function defaultSquareComponentTemplate(props: { svg: string; name: string; sizes: number[] }) {
-  const { svg, name } = props
+function defaultSquareComponentTemplate(props: { svg: string; component: Component }) {
+  const { svg, component } = props
+  const name = component.selfName
 
   const template = `
     /* This file was created automatically, don't change it manually. */
@@ -108,13 +108,13 @@ function defaultSquareComponentTemplate(props: { svg: string; name: string; size
       /**
        * Icon size
        *
-       * @default ${props.sizes[0]}
+       * @default ${component.meta.sizes[0]}
        */
-      size?: ${props.sizes.join(' | ')}
+      size?: ${component.meta.sizes.join(' | ')}
     }
 
     export const ${name} = forwardRef<SVGSVGElement, ${name}Props>((props, ref) => {
-      const { className, size = ${props.sizes[0]}, ...otherProps } = props
+      const { className, size = ${component.meta.sizes[0]}, ...otherProps } = props
 
       return (
         ${svg}
@@ -125,8 +125,9 @@ function defaultSquareComponentTemplate(props: { svg: string; name: string; size
   return template
 }
 
-function defaultNonSquareComponentTemplate(props: { svg: string; name: string; sizes: number[] }) {
-  const { svg, name } = props
+function defaultNonSquareComponentTemplate(props: { svg: string; component: Component }) {
+  const { svg, component } = props
+  const name = component.selfName
 
   const template = `
     /* This file was created automatically, don't change it manually. */
