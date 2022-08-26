@@ -1,0 +1,17 @@
+{
+  "name": "@figma-extractor/core",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "ISC",
+  "scripts": {
+    "build": "rm -rf dist/* && tsc -p tsconfig.json",
+    "test": "jest"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.2"
+  }
+}
