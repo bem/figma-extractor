@@ -13,7 +13,7 @@ export const parseComponentProperties = <N extends Node>(node: N): WithPropertie
 
     let value = undefined
     switch (true) {
-      case Number(rawValue) !== NaN: {
+      case !Number.isNaN(Number(rawValue)): {
         value = Number(rawValue)
         break
       }
