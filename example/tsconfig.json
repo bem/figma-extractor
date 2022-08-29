@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "esnext",
+    "allowJs": true,
+    "outDir": "./dist",
+  },
+  "include": ["./index.ts"]
+}
