@@ -86,7 +86,7 @@ export class Extractor {
           return [nodeWithParent as NodeInfo]
         }
 
-        return this.filterNodes(nodeWithParent.children, this.mapNode(parent), depth + 1)
+        return this.filterNodes(nodeWithParent.children, this.mapNode(nodeWithParent), depth + 1)
       })
       .map(this.mapNode)
   }
