@@ -1,5 +1,3 @@
-import type { Node } from '@figma-extractor/core'
-
-export interface NodeWithProperties extends Node {
+export type WithProperties<N> = N & {
   properties: Record<string, string | number | boolean>
 }

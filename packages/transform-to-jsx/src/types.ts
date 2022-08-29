@@ -4,7 +4,7 @@ import * as babelTypes from '@babel/types'
 
 export type BabelTypes = typeof babelTypes
 
-export interface NodeWithJsx extends Node {
+export type WithJsx<N> = N & {
   jsxContent: string
 }
 

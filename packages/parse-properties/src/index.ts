@@ -1,8 +1,8 @@
 import { Node } from '@figma-extractor/core'
 
-import { NodeWithProperties } from './types'
+import { WithProperties } from './types'
 
-export const parseComponentProperties = (node: Node): NodeWithProperties => {
+export const parseComponentProperties = <N extends Node>(node: N): WithProperties<N> => {
   const properties: Record<string, string | number | boolean> = {}
 
   const chunks = node.name.replace(/\s/g, '').split(',')
