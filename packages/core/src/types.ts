@@ -41,3 +41,23 @@ export interface Source {
    */
   token?: string
 }
+
+export interface FigmaNode {
+  id: string
+  name: string
+  type: 'COMPONENT_SET' | 'COMPONENT' | 'INSTANCE'
+  children: FigmaNode[] | undefined
+}
+
+export interface FigmaFileResponse {
+  nodes: Record<
+    string,
+    {
+      document: FigmaNode
+    }
+  >
+}
+
+export interface FigmaImageLinksResponse {
+  images: Record<string, string>
+}

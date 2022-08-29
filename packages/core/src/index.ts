@@ -1,41 +1,35 @@
 import { env } from 'process'
 import fetch from 'node-fetch'
 
-import type { ExtractorConfig, Source, Node, NodeInfo } from './types'
-
-const FIGMA_BASE_URL = 'https://api.figma.com/'
-
-interface FigmaNode {
-  id: string
-  name: string
-  type: 'COMPONENT_SET' | 'COMPONENT' | 'INSTANCE'
-  children: FigmaNode[] | undefined
-}
-
-interface FigmaFileResponse {
-  nodes: Record<
-    string,
-    {
-      document: FigmaNode
-    }
-  >
-}
-
-interface FigmaImageLinksResponse {
-  images: Record<string, string>
-}
-
-const DEFAULT_CONFIG: ExtractorConfig = {
-  depth: 2,
-  nodeFilter: (node) => node.type == 'COMPONENT' || node.type == 'COMPONENT_INSTANCE',
-  token: undefined,
-}
+import { DEFAULT_CONFIG, FIGMA_BASE_URL } from './constants'
+import type {
+  ExtractorConfig,
+  Source,
+  Node,
+  NodeInfo,
+  FigmaFileResponse,
+  FigmaImageLinksResponse,
+  FigmaNode,
+} from './types'
 
 export class Extractor {
   config: ExtractorConfig
 
   constructor(config: Partial<ExtractorConfig>) {
     this.config = Object.assign(DEFAULT_CONFIG, config)
+  }
+
+  private async fetchFigma(url: string, token: string) {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-Figma-Token': token,
+      },
+    })
+    if (!response.ok) {
+      throw new Error(`Failed to get response from Figma API: ${response.statusText}.`)
+    }
+    return response
   }
 
   private async fetchFile(source: Source, token: string): Promise<FigmaFileResponse> {
@@ -45,15 +39,7 @@ export class Extractor {
       Array.isArray(source.nodeId) ? source.nodeId.join(',') : source.nodeId,
     )
 
-    const response = await fetch(apiUrl.toString(), {
-      method: 'GET',
-      headers: {
-        'X-Figma-Token': token,
-      },
-    })
-    if (!response.ok) {
-      throw new Error(`Failed to fetch document. Figma API response: ${response.statusText}.`)
-    }
+    const response = await this.fetchFigma(apiUrl.toString(), token)
 
     return (await response.json()) as FigmaFileResponse
   }
@@ -67,33 +53,13 @@ export class Extractor {
     apiUrl.searchParams.append('ids', nodeIds.join(','))
     apiUrl.searchParams.append('format', 'svg')
 
-    const response = await fetch(apiUrl.toString(), {
-      method: 'GET',
-      headers: {
-        'X-Figma-Token': token,
-      },
-    })
-    if (!response.ok) {
-      throw new Error(
-        `Failed to download nodes content. Figma API response: ${response.statusText}.`,
-      )
-    }
+    const response = await this.fetchFigma(apiUrl.toString(), token)
 
     return (await response.json()) as FigmaImageLinksResponse
   }
 
   private async fetchImage(token: string, imageLink: string): Promise<string> {
-    const response = await fetch(imageLink, {
-      method: 'GET',
-      headers: {
-        'X-Figma-Token': token,
-      },
-    })
-    if (!response.ok) {
-      throw new Error(
-        `Failed to download nodes content. Figma API response: ${response.statusText}.`,
-      )
-    }
+    const response = await this.fetchFigma(imageLink, token)
 
     return await response.text()
   }
@@ -165,4 +131,4 @@ export class Extractor {
   }
 }
 
-export * from './types'
+export { Node, NodeInfo, ExtractorConfig, Source } from './types'
