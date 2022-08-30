@@ -89,7 +89,7 @@ nodes
 
 ## `@figma-extractor/transform-to-jsx`
 
-Parses svg with babel and prepare for using inside JSX components. (See example above) – renames attributes to camelCase, removes extra attributes etc. Allows to customize behaviour using Plugins api
+Parses svg with babel and prepare for using inside JSX components (See example above) – renames attributes to camelCase, removes extra attributes etc. Allows to customize behaviour using Plugins api
 
 ```ts
 import { transformToJsx } from '@figma-extractor/transform-to-jsx'
