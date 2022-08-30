@@ -1,20 +1,24 @@
 {
   "compilerOptions": {
-    "target": "ES5" ,
-    "module": "commonjs" ,
-    "jsx": "react-jsx" ,
-    "declaration": true ,
-    "outDir": "./lib" ,
-    "rootDir": "./src" ,
-    "stripInternal": true,
-    "noEmitHelpers": true,
-    "importHelpers": true ,
-    "strict": true ,
-    "moduleResolution": "node" ,
-    "baseUrl": "./" ,
-    "allowSyntheticDefaultImports": true ,
-    "esModuleInterop": true, 
-    "downlevelIteration": true
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "esnext",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "allowJs": true,
+    "outDir": "./dist"
   },
-  "include": ["src"]
+  "exclude": [
+    "node_modules", "dist",
+  ],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/svgo-optimize" },
+    { "path": "./packages/transform-to-jsx" },
+    { "path": "./packages/parse-properties" },
+  ]
 }

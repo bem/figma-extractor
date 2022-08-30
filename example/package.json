@@ -1,0 +1,20 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node ./dist/index.js"
+  },
+  "dependencies": {
+    "@figma-extractor/core": "file:../packages/core",
+    "@figma-extractor/parse-properties": "file:../packages/parse-properties",
+    "@figma-extractor/svgo-optimize": "file:../packages/svgo-optimize",
+    "change-case": "^4.1.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.2"
+  }
+}
