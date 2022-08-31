@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "ISC",
+  "readme": "../Readme.md",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepublish": "npm run build"
@@ -17,5 +18,10 @@
     "@babel/traverse": "^7.18.13",
     "@babel/types": "^7.18.13",
     "change-case": "^4.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bem/figma-extractor.git",
+    "directory": "packages/transform-to-jsx"
   }
 }

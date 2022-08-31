@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "ISC",
+  "readme": "../Readme.md",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepublish": "npm run build"
@@ -16,5 +17,10 @@
   },
   "devDependencies": {
     "@types/svgo": "^2.6.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bem/figma-extractor.git",
+    "directory": "packages/svgo-optimize"
   }
 }
