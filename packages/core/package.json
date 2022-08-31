@@ -6,6 +6,7 @@
   "license": "ISC",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "prepublish": "npm run build",
     "test": "jest"
   },
   "dependencies": {
