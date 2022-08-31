@@ -1,21 +1,21 @@
 {
-    "name": "@figma-extractor/transform-to-jsx",
-    "version": "1.0.0",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "license": "ISC",
-    "scripts": {
-        "build": "tsc -p tsconfig.json",
-        "prepublish": "npm run build"
-    },
-    "peerDependencies": {
-        "@figma-extractor/core": "^1.0.0"
-    },
-    "dependencies": {
-        "@babel/core": "^7.18.13",
-        "@babel/parser": "^7.18.13",
-        "@babel/traverse": "^7.18.13",
-        "@babel/types": "^7.18.13",
-        "change-case": "^4.1.2"
-    }
+  "name": "@figma-extractor/transform-to-jsx",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "ISC",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublish": "npm run build"
+  },
+  "peerDependencies": {
+    "@figma-extractor/core": "^1.0.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.18.13",
+    "@babel/parser": "^7.18.13",
+    "@babel/traverse": "^7.18.13",
+    "@babel/types": "^7.18.13",
+    "change-case": "^4.1.2"
+  }
 }

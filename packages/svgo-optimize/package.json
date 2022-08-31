@@ -1,20 +1,20 @@
 {
-    "name": "@figma-extractor/svgo-optimize",
-    "version": "1.0.0",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "license": "ISC",
-    "scripts": {
-        "build": "tsc -p tsconfig.json",
-        "prepublish": "npm run build"
-    },
-    "peerDependencies": {
-        "@figma-extractor/core": "^1.0.0"
-    },
-    "dependencies": {
-        "svgo": "^2.8.0"
-    },
-    "devDependencies": {
-        "@types/svgo": "^2.6.4"
-    }
+  "name": "@figma-extractor/svgo-optimize",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "ISC",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublish": "npm run build"
+  },
+  "peerDependencies": {
+    "@figma-extractor/core": "^1.0.0"
+  },
+  "dependencies": {
+    "svgo": "^2.8.0"
+  },
+  "devDependencies": {
+    "@types/svgo": "^2.6.4"
+  }
 }
