@@ -1,10 +1,9 @@
 {
   "name": "@figma-extractor/parse-properties",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "ISC",
-  "readme": "../../Readme.md",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepublish": "npm run build"
