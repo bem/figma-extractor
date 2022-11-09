@@ -14,7 +14,10 @@ export const transformToJsx = <N extends Node>(node: N, plugins: Plugin[] = []):
   const extendedPlugins = [jsxTransformPlugin, ...plugins]
   extendedPlugins.forEach((plugin) => traverse(ast, plugin.traverseOptions(node, t)))
 
-  const result = transformFromAstSync(ast, node.content)
+  const result = transformFromAstSync(ast, node.content, {
+    configFile: false,
+    babelrc: false,
+  })
 
   return {
     ...node,
