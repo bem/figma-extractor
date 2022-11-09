@@ -12,6 +12,8 @@ import type {
   FigmaNode,
 } from './types'
 
+const PAGE_SIZE = 200
+
 export class Extractor {
   config: ExtractorConfig
 
@@ -108,17 +110,27 @@ export class Extractor {
       return []
     }
 
-    const imagesLinksMap = (
-      await this.fetchImageLinks(
-        source,
-        token,
-        nodes.map((node) => node.id),
-      )
-    ).images
+    let nodeIds = nodes.map((node) => node.id)
+    let imagesLinksMap: FigmaImageLinksResponse['images'] = {}
+
+    while (nodeIds.length > 0) {
+      const idsPage = nodeIds.splice(0, PAGE_SIZE)
+      const imagesLinksPage = (await this.fetchImageLinks(source, token, idsPage)).images
+
+      imagesLinksMap = {
+        ...imagesLinksMap,
+        ...imagesLinksPage,
+      }
+    }
 
     const nodesWithContent = []
 
     for (const node of nodes) {
+      if (!imagesLinksMap[node.id]) {
+        console.warn(`Failed to fetch image for node ${node.name}`)
+        continue
+      }
+
       const content = await this.fetchImage(token, imagesLinksMap[node.id])
 
       nodesWithContent.push({
